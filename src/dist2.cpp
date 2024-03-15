@@ -1,16 +1,18 @@
-#include <Rcpp.h>
-#include "graphdist_types.h"
-// using namespace Rcpp;
+// #include <Rcpp.h>
+// #include "RcppSparse.h"
+#include "../inst/include/graphdist_types.h"
+using namespace Rcpp;
 
 // [[Rcpp::export("get_distsparse_cpp")]]
-Rcpp::List get_distsparse(Rcpp::dgCMatrix& mat, int node, int d){
+List get_distsparse(RcppSparse::Matrix& mat, int node, int d){
   // assumption: from and to have same domain
   int max_n = mat.cols();
-  Rcpp::IntegerVector distance(max_n, R_NaInt);
-  Rcpp::IntegerVector nodes_at_d(d+1);
+  IntegerVector distance(max_n, R_NaInt);
+  IntegerVector nodes_at_d(d+1);
 
   std::vector<int> current;
   current.push_back(node);
+  distance[node] = 0;
 
   // maybe a better iterator
   int dc = 1;
@@ -18,9 +20,10 @@ Rcpp::List get_distsparse(Rcpp::dgCMatrix& mat, int node, int d){
     int n_at_d = 0;
     std::vector<int> next;
     for (auto from = current.begin(); from != current.end(); from++){
-      for (auto i = mat.begin_col(*from); i != mat.end_col(*from); i++){
-        int to = i.row();
-        if (Rcpp::IntegerVector::is_na(distance[to])){
+      auto rows = mat.InnerIndices(*from);
+      for (auto i = rows.begin(); i != rows.end(); i++){
+        int to = *i;
+        if (IntegerVector::is_na(distance[to])){
           n_at_d += 1;
           next.push_back(to);
           distance[to] = dc;
@@ -32,17 +35,17 @@ Rcpp::List get_distsparse(Rcpp::dgCMatrix& mat, int node, int d){
     current = next;
   }
 
-  return Rcpp::List::create(
-    Rcpp::_["node"] = node,
-    Rcpp::_["d"] = d,
-    Rcpp::_["dc"] = dc,
-    Rcpp::_["distance"] = distance,
-    Rcpp::_["nodes_at_d"] = nodes_at_d
+  return List::create(
+    _["node"] = node,
+    _["d"] = d,
+    _["dc"] = dc,
+    _["distance"] = distance,
+    _["nodes_at_d"] = nodes_at_d
   );
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector Rcpp_colSums(Rcpp::dgCMatrix& mat){
+NumericVector Rcpp_colSums(RcppSparse::Matrix& mat){
   return mat.colSums();
 }
 

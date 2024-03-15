@@ -32,16 +32,11 @@ from <- sample(N, size=M, replace = TRUE)
 to <- sample(N, size=M, replace = TRUE)
 mat <- sparseMatrix(j = from, i = to, x = 1, dims=c(N,N))
 
-library(microbenchmark)
-
-microbenchmark(
-  dist = get_distsparse_cpp(mat, 0, 1)
-)
-
 system.time({
-  r <- get_distsparse_cpp(mat, 0, 1)
+  r <- get_distsparse_cpp(mat, 0,  5)
 })
 hist(r$distance)
+r$nodes_at_d |> sum()
 #
 # x <- data.frame(from, to)
 # x <- x[x$from != x$to,]
