@@ -1,10 +1,8 @@
-// #include <Rcpp.h>
-// #include "RcppSparse.h"
 #include "../inst/include/graphdist_types.h"
 using namespace Rcpp;
 
 // [[Rcpp::export("get_distsparse_cpp")]]
-List get_distsparse(RcppSparse::Matrix& mat, int node, int d){
+List get_distsparse(RcppSparse::Matrix& mat, std::size_t node, int d){
   // assumption: from and to have same domain
   int max_n = mat.cols();
   IntegerVector distance(max_n, R_NaInt);
@@ -55,8 +53,11 @@ library(Matrix)
 mat <- rsparsematrix(1e4, 1e4, 0.05)
 # colSums <- Rcpp_colSums(mat)
 system.time({
-  r <- get_distsparse_cpp(mat, 1, d=5)
+  for (i in 1:1e3){
+    r <- get_distsparse_cpp(mat, 2, d=5)
+  }
 })
 
 hist(r$distance)
+
 */

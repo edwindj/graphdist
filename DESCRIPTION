@@ -15,4 +15,5 @@ Imports:
     Matrix,
     Rcpp
 LinkingTo: 
-    Rcpp
+    Rcpp,
+    RcppParallel

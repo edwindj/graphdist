@@ -26,13 +26,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_distsparse
-List get_distsparse(RcppSparse::Matrix& mat, int node, int d);
+List get_distsparse(RcppSparse::Matrix& mat, std::size_t node, int d);
 RcppExport SEXP _graphdist_get_distsparse(SEXP matSEXP, SEXP nodeSEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RcppSparse::Matrix& >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< int >::type node(nodeSEXP);
+    Rcpp::traits::input_parameter< std::size_t >::type node(nodeSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
     rcpp_result_gen = Rcpp::wrap(get_distsparse(mat, node, d));
     return rcpp_result_gen;
@@ -49,11 +49,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_par
+NumericMatrix rcpp_par(RcppSparse::Matrix mat, IntegerVector nodes, int max_d);
+RcppExport SEXP _graphdist_rcpp_par(SEXP matSEXP, SEXP nodesSEXP, SEXP max_dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RcppSparse::Matrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< int >::type max_d(max_dSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_par(mat, nodes, max_d));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_get_dist", (DL_FUNC) &_graphdist_get_dist, 4},
     {"_graphdist_get_distsparse", (DL_FUNC) &_graphdist_get_distsparse, 3},
     {"_graphdist_Rcpp_colSums", (DL_FUNC) &_graphdist_Rcpp_colSums, 1},
+    {"_graphdist_rcpp_par", (DL_FUNC) &_graphdist_rcpp_par, 3},
     {NULL, NULL, 0}
 };
 

@@ -13,3 +13,7 @@ Rcpp_colSums <- function(mat) {
     .Call(`_graphdist_Rcpp_colSums`, mat)
 }
 
+rcpp_par <- function(mat, nodes, max_d = 5L) {
+    .Call(`_graphdist_rcpp_par`, mat, nodes, max_d)
+}
+
