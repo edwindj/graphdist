@@ -53,10 +53,10 @@ library(Matrix)
 mat <- rsparsematrix(1e4, 1e4, 0.05)
 # colSums <- Rcpp_colSums(mat)
 system.time({
-  for (i in 1:1e3){
-    r <- get_distsparse_cpp(mat, 2, d=5)
-  }
+  r <- get_distsparse_cpp(mat, 2, d=5)
 })
+
+rcpp_par(mat, 1)
 
 hist(r$distance)
 

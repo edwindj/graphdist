@@ -25,7 +25,8 @@ struct PerNode : public Worker
   }
 
   void operator()(std::size_t begin, std::size_t end) {
-    for (std::size_t node = begin; node < end; node++){
+    for (std::size_t idx = begin; idx < end; idx++){
+      int node = nodes[idx];
       auto l = get_distsparse(input, node, max_d);
     }
   }
