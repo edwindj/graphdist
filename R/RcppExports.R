@@ -9,11 +9,11 @@ get_distsparse_cpp <- function(mat, node, d) {
     .Call(`_graphdist_get_distsparse`, mat, node, d)
 }
 
-Rcpp_colSums <- function(mat) {
-    .Call(`_graphdist_Rcpp_colSums`, mat)
+Rcpp_getdist <- function(mat, nodes, d) {
+    .Call(`_graphdist_Rcpp_getdist`, mat, nodes, d)
 }
 
-rcpp_par <- function(mat, nodes, max_d = 5L) {
-    .Call(`_graphdist_rcpp_par`, mat, nodes, max_d)
+Rcpp_colSums <- function(mat) {
+    .Call(`_graphdist_Rcpp_colSums`, mat)
 }
 

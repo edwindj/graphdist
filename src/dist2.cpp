@@ -6,15 +6,15 @@ List get_distsparse(RcppSparse::Matrix& mat, std::size_t node, int d){
   // assumption: from and to have same domain
   int max_n = mat.cols();
   IntegerVector distance(max_n, R_NaInt);
-  IntegerVector nodes_at_d(d+1);
+  IntegerVector nodes_at_d(d);
 
   std::vector<int> current;
   current.push_back(node);
   distance[node] = 0;
 
   // maybe a better iterator
-  int dc = 1;
-  while (dc <= d && current.size() > 0){
+  int dc = 0;
+  while (dc < d && current.size() > 0){
     int n_at_d = 0;
     std::vector<int> next;
     for (auto from = current.begin(); from != current.end(); from++){
@@ -24,7 +24,7 @@ List get_distsparse(RcppSparse::Matrix& mat, std::size_t node, int d){
         if (IntegerVector::is_na(distance[to])){
           n_at_d += 1;
           next.push_back(to);
-          distance[to] = dc;
+          distance[to] = dc+1;
         }
       }
     }
@@ -43,21 +43,29 @@ List get_distsparse(RcppSparse::Matrix& mat, std::size_t node, int d){
 }
 
 // [[Rcpp::export]]
-NumericVector Rcpp_colSums(RcppSparse::Matrix& mat){
-  return mat.colSums();
+IntegerMatrix Rcpp_node_count_dist(RcppSparse::Matrix& mat, IntegerVector nodes, int d){
+  int ncols = nodes.length();
+  IntegerMatrix m(d,ncols);
+  for (int n = 0; n < nodes.length(); n++){
+    auto node = nodes[n];
+    auto res = get_distsparse(mat, node, d);
+    IntegerVector a = res["nodes_at_d"];
+    m(_, n) = a;
+ //   m(_, node) = res["nodes_at_d"];
+  }
+  return m;
 }
 
 
 /*** R
 library(Matrix)
-mat <- rsparsematrix(1e4, 1e4, 0.05)
-# colSums <- Rcpp_colSums(mat)
+mat <- rsparsematrix(1e4, 1e4, 0.02)
 system.time({
   r <- get_distsparse_cpp(mat, 2, d=5)
 })
 
-rcpp_par(mat, 1)
-
 hist(r$distance)
 
+m <- Rcpp_node_count_dist(mat, 1:3, 5)
+m
 */
