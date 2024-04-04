@@ -5,15 +5,11 @@ get_dist_cpp <- function(x, node, d, max_n) {
     .Call(`_graphdist_get_dist`, x, node, d, max_n)
 }
 
-get_distsparse_cpp <- function(mat, node, d) {
-    .Call(`_graphdist_get_distsparse`, mat, node, d)
+get_distsparse_cpp <- function(mat, member, node, d) {
+    .Call(`_graphdist_get_distsparse`, mat, member, node, d)
 }
 
-Rcpp_getdist <- function(mat, nodes, d) {
-    .Call(`_graphdist_Rcpp_getdist`, mat, nodes, d)
-}
-
-Rcpp_colSums <- function(mat) {
-    .Call(`_graphdist_Rcpp_colSums`, mat)
+rcpp_node_count_dist <- function(mat, member, from, d) {
+    .Call(`_graphdist_rcpp_node_count_dist`, mat, member, from, d)
 }
 

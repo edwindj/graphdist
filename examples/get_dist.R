@@ -14,8 +14,8 @@ d[, from := factor(from, levels = levs)]
 d[, to := factor(to, levels=levs)]
 
 mat <- sparseMatrix(j = d$from, i = d$to, x = 1, dims = c(N,N), dimnames = list(from=levs, to=levs))
-
-get_distsparse_cpp(mat, 0, 2)
+member <- c(TRUE, FALSE, TRUE, FALSE, FALSE)
+get_distsparse_cpp(mat, member, 1, 3)
 
 # ds <- data.frame(
 #   name = levs,
@@ -31,13 +31,22 @@ M <- 1e8
 from <- sample(N, size=M, replace = TRUE)
 to <- sample(N, size=M, replace = TRUE)
 mat <- sparseMatrix(j = from, i = to, x = 1, dims=c(N,N))
+member <- (runif(N) > 0.99)
 
 system.time({
-  r <- get_distsparse_cpp(mat, 0,  5)
+  r <- get_distsparse_cpp(mat, member, 1,  5)
 })
+
 hist(r$distance)
+
+system.time({
+  r <- rcpp_node_count_dist(mat, member, 1:5,  4)
+})
+
+
 r$nodes_at_d |> sum()
-#
+
+r#
 # x <- data.frame(from, to)
 # x <- x[x$from != x$to,]
 #
