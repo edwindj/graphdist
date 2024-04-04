@@ -11,7 +11,7 @@ D,E
 # assume data.frame with to and from
 setDF(d)
 
-r <- get_member_count(d, from = c("A", "D"), d = 2)
+r <- get_member_distance(d, from = c("A", "D"), max_distance = 2)
 print(r)
 
 library(data.table)
@@ -27,5 +27,5 @@ edges <- data.table(
 
 from <- sample(N, size = 50)
 
-r <- get_member_count(edges, from = from, distance = 4)
+r <- get_member_distance(edges, from = from, max_distance = 4)
 r

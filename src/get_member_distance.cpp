@@ -1,12 +1,12 @@
 #include "../inst/include/graphdist_types.h"
 using namespace Rcpp;
 
-// [[Rcpp::export("get_distsparse_cpp")]]
-List get_distsparse( RcppSparse::Matrix& mat
-                   , LogicalVector& member // same dimension as row / col mat
-                   , std::size_t node // node idx
-                   , int d
-                   ){
+// [[Rcpp::export]]
+List rcpp_get_dist_sparse( RcppSparse::Matrix& mat
+                        , LogicalVector& member // same dimension as row / col mat
+                        , std::size_t node // node idx
+                        , int max_d
+                        ){
   node -= 1; // R is 1-based, C++ 0-based
 
   // assumption: from, to and member have same domain, should be taken care of
@@ -15,8 +15,8 @@ List get_distsparse( RcppSparse::Matrix& mat
 
   IntegerVector distance(max_n, R_NaInt);
 
-  IntegerVector nodes_at_d(d);
-  IntegerVector members_at_d(d);
+  IntegerVector nodes_at_d(max_d);
+  IntegerVector members_at_d(max_d);
 
   std::vector<int> current;
   current.push_back(node);
@@ -25,7 +25,7 @@ List get_distsparse( RcppSparse::Matrix& mat
   // maybe a better iterator
   int dc = 0;
 
-  while (dc < d && current.size() > 0){
+  while (dc < max_d && current.size() > 0){
     int n_at_d = 0;
     int n_members = 0;
     std::vector<int> next;
@@ -49,7 +49,7 @@ List get_distsparse( RcppSparse::Matrix& mat
 
   return List::create(
     _["node"] = node,
-    _["d"] = d,
+    _["max_d"] = max_d,
     _["dc"] = dc,
     _["distance"] = distance,
     _["nodes_at_d"] = nodes_at_d,
@@ -58,17 +58,17 @@ List get_distsparse( RcppSparse::Matrix& mat
 }
 
 // [[Rcpp::export]]
-List rcpp_node_count_dist( RcppSparse::Matrix& mat
+List rcpp_member_distance( RcppSparse::Matrix& mat
                                   , LogicalVector& member
                                   , IntegerVector from
-                                  , int d
+                                  , int max_d
                                   ){
   int ncols = from.length();
-  IntegerMatrix n_nodes(d,ncols);
-  IntegerMatrix n_members(d,ncols);
+  IntegerMatrix n_nodes(max_d,ncols);
+  IntegerMatrix n_members(max_d,ncols);
   for (int i = 0; i < from.length(); i++){
     auto node_id = from[i];
-    auto res = get_distsparse(mat, member, node_id, d);
+    auto res = rcpp_get_dist_sparse(mat, member, node_id, max_d);
     n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
     n_members(_, i) = as<IntegerVector>(res["members_at_d"]);
   }
@@ -87,13 +87,13 @@ mat <- rsparsematrix(1e4, 1e4, 0.02)
 member <- (runif(1e4) > 0.9) # i.e. 10% chance of being a member
 
 system.time({
-  r <- get_distsparse_cpp(mat, member, 2, d=5)
+  r <- rcpp_get_dist_sparse(mat, member, 2, max_d=5)
 })
 
 hist(r$distance)
 
 system.time({
-  m <- rcpp_node_count_dist(mat, member, seq_len(10), 5)
+  m <- rcpp_member_distance(mat, member, seq_len(10), max_d=5)
 })
 
 (m$n_members/m$n_nodes) |> round(2)

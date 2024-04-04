@@ -2,8 +2,8 @@
 using namespace Rcpp;
 
 
-// [[Rcpp::export("get_dist_cpp")]]
-List get_dist(DataFrame x, int node, int d, int max_n){
+// [[Rcpp::export]]
+List rcpp_get_dist(DataFrame x, int node, int d, int max_n){
   // assumption: from and to have same domain
   IntegerVector from = x["from"];
   IntegerVector to = x["to"];
@@ -44,6 +44,6 @@ x <- data.frame(
   to = factor(c("B","C","D"), levels=LETTERS[1:4])
 )
 
-get_dist_cpp(x, node = 1, d = 2, max_n = 4)
+rcpp_get_dist(x, node = 1, d = 2, max_n = 4)
 
 */
