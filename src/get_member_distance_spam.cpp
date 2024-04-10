@@ -1,12 +1,14 @@
-#include "../inst/include/graphdist_types.h"
+#include "../inst/include/RcppSpam.h"
 using namespace Rcpp;
 
+
+
 // [[Rcpp::export]]
-List rcpp_get_dist_sparse( RcppSparse::Matrix& mat
-                        , LogicalVector& member // same dimension as row / col mat
-                        , std::size_t node // node idx
-                        , int max_d
-                        ){
+List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
+                          , LogicalVector& member // same dimension as row / col mat
+                          , std::size_t node // node idx
+                          , int max_d
+                          ){
   node -= 1; // R is 1-based, C++ 0-based
 
   // assumption: from, to and member have same domain, should be taken care of
@@ -30,8 +32,8 @@ List rcpp_get_dist_sparse( RcppSparse::Matrix& mat
     int n_members = 0;
     std::vector<int> next;
     for (auto from = current.begin(); from != current.end(); from++){
-      auto rows = mat.InnerIndices(*from);
-      for (auto i = rows.begin(); i != rows.end(); i++){
+      auto cols = mat.InnerIndices(*from);
+      for (auto i = cols.begin(); i != cols.end(); i++){
         int to = *i;
         if (IntegerVector::is_na(distance[to])){
           n_at_d += 1;
@@ -58,7 +60,7 @@ List rcpp_get_dist_sparse( RcppSparse::Matrix& mat
 }
 
 // [[Rcpp::export]]
-List rcpp_member_distance( RcppSparse::Matrix& mat
+List rcpp_member_distance2( RcppSpam::Matrix& mat
                                   , LogicalVector& member
                                   , IntegerVector from
                                   , int max_d
@@ -68,7 +70,7 @@ List rcpp_member_distance( RcppSparse::Matrix& mat
   IntegerMatrix n_members(max_d,ncols);
   for (int i = 0; i < from.length(); i++){
     auto node_id = from[i];
-    auto res = rcpp_get_dist_sparse(mat, member, node_id, max_d);
+    auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
     n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
     n_members(_, i) = as<IntegerVector>(res["members_at_d"]);
   }
@@ -81,18 +83,21 @@ List rcpp_member_distance( RcppSparse::Matrix& mat
 
 /*** R
 set.seed(1)
-library(Matrix)
-mat <- rsparsematrix(1e4, 1e4, 0.02)
+library(spam)
+library(spam64)
+options("spam.force64" = TRUE)
+
+M <- spam_random(nrow = 1e4, density = 0.02)
 member <- (runif(1e4) > 0.9) # i.e. 10% chance of being a member
 
 system.time({
-  r <- rcpp_get_dist_sparse(mat, member, 2, max_d=5)
+  r <- rcpp_get_dist_sparse2(M, member, 2, max_d=5)
 })
 
 hist(r$distance)
 
 system.time({
-  m <- rcpp_member_distance(mat, member, seq_len(10), max_d=5)
+  m <- rcpp_member_distance2(M, member, seq_len(10), max_d=5)
 })
 
 (m$n_members/m$n_nodes) |> round(2)

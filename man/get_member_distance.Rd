@@ -7,7 +7,7 @@
 get_member_distance(edges, from, max_distance = 3)
 }
 \arguments{
-\item{edges}{\code{data.frame} with a \verb{$from} and \verb{$to} column with node ids.}
+\item{edges}{\code{data.frame} or a \verb{[sparseMatrix()]} with a \verb{$from} and \verb{$to} column with node ids.}
 
 \item{from}{\code{character} list of node ids that are considered a member}
 

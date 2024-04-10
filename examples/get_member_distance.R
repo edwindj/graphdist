@@ -17,15 +17,22 @@ print(r)
 library(data.table)
 # big example
 set.seed(1)
-N <- 1e3
-M <- 1e5
+N <- 1e6
+M <- 1e8
 
 edges <- data.table(
   from = sample(N, size=M, replace = TRUE),
   to   = sample(N, size=M, replace = TRUE)
 )[from != to,] |> setDF()
 
-from <- sample(N, size = 50)
+from <- sample(N, size = 1e2)
 
-r <- get_member_distance(edges, from = from, max_distance = 4)
+E <- to_sparse_matrix(edges)
+
+saveRDS(E, "E.rds")
+
+E <- readRDS("E.rds")
+system.time({
+  r <- get_member_distance(E, from = from, max_distance = 3)
+})
 r

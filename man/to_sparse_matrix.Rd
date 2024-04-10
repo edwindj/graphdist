@@ -6,6 +6,12 @@
 \usage{
 to_sparse_matrix(edges)
 }
+\arguments{
+\item{edges}{\code{data.frame} or a \verb{[sparseMatrix()]} with a \verb{$from} and \verb{$to} column with node ids.}
+}
+\value{
+A sparse \code{Matrix} encoding the edges
+}
 \description{
 edges is data.frame
 }

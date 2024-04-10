@@ -3,5 +3,4 @@
 export(get_member_distance)
 importFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,sourceCpp)
-importFrom(data.table,as.data.table)
 useDynLib(graphdist, .registration = TRUE)

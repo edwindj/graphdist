@@ -4,14 +4,18 @@
 #' for each node in `from`. Furthermore it also return the number of neighbors that
 #' are part of the set `from`.
 #' @export
-#' @param edges `data.frame` with a `$from` and `$to` column with node ids.
+#' @param edges `data.frame` or a `[sparseMatrix()]` with a `$from` and `$to` column with node ids.
 #' @param from `character` list of node ids that are considered a member
 #' @param max_distance `integer` maximum distance at which the calculation stops.
 get_member_distance <- function( edges
                                , from
                                , max_distance = 3
                                ){
-  E <- to_sparse_matrix(edges)
+  if (is.data.frame(edges)){
+    E <- to_sparse_matrix(edges)
+  } else {
+    E <- edges
+  }
 
   member <- colnames(E) %in% from
   f <- which(member)
@@ -41,17 +45,24 @@ get_member_distance <- function( edges
 }
 
 #' edges is data.frame
-#' @importFrom data.table as.data.table
 #' @importFrom Matrix sparseMatrix
+#' @inheritParams get_member_distance
+#' @return A sparse `Matrix` encoding the edges
 to_sparse_matrix <- function(edges){
   stopifnot(all(c("to", "from") %in% names(edges)))
-  d <- as.data.table(edges[, c("to", "from")])
-  levs <- d[, union(from, to)]
-  N <- length(levs)
+  d <- edges
 
-  d[, from := factor(from, levels = levs)]
-  d[, to := factor(to, levels=levs)]
+  # give the node ids the same factor
+  from <- fast_factorize(d$from)
+  to <- fast_factorize(d$to, levs = levels(from))
+  levels(from) <- levels(to)
+  levs <- levels(to)
 
-  mat <- sparseMatrix(j = d$from, i = d$to, x = 1, dims = c(N,N), dimnames = list(from=levs, to=levs))
+  mat <- sparseMatrix( j = from
+                     , i = to
+                     , x = 1
+                     , dims = c(N,N)
+                     , dimnames = list(from=levs, to=levs)
+                     )
   mat
 }

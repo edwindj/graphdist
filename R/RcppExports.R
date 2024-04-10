@@ -13,3 +13,11 @@ rcpp_member_distance <- function(mat, member, from, max_d) {
     .Call(`_graphdist_rcpp_member_distance`, mat, member, from, max_d)
 }
 
+rcpp_get_dist_sparse2 <- function(mat, member, node, max_d) {
+    .Call(`_graphdist_rcpp_get_dist_sparse2`, mat, member, node, max_d)
+}
+
+rcpp_member_distance2 <- function(mat, member, from, max_d) {
+    .Call(`_graphdist_rcpp_member_distance2`, mat, member, from, max_d)
+}
+
