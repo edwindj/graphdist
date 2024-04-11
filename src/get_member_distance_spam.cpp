@@ -95,13 +95,15 @@ S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   Rcout << "Calculating indices...";
 
   std::vector<R_xlen_t> indices(M);
+  Rcout << "\tiota...";
   std::iota(indices.begin(), indices.end(), 0);
+  Rcout << "\tsorting ...";
   std::sort(indices.begin(), indices.end(),
             [&](auto a, auto b) -> bool {
               return from[a] < from[b] && to[a] < to[b];
             });
 
-  Rcout << "sorted";
+  Rcout << "\tsorted";
 
   IntegerVector dimension = {N,N};
 
