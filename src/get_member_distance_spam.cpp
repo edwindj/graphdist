@@ -2,7 +2,10 @@
 using namespace Rcpp;
 
 
-
+//[[Rcpp::plugins(openmp)]]
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 // [[Rcpp::export]]
 List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
                           , LogicalVector& member // same dimension as row / col mat
@@ -68,6 +71,9 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
   int ncols = from.length();
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
+  #ifdef _OPENMP
+  #pragma omp parallel for
+  #endif
   for (R_xlen_t i = 0; i < from.length(); i++){
     auto node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
