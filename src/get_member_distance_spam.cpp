@@ -81,14 +81,59 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
   );
 }
 
+struct compare {
+  std::vector<double>& o;
+  compare(std::vector<double>& o) : o(o) {};
+  bool operator() (int i, int j) {return i < j;}
+};
+
+// [[Rcpp::export]]
+S4 rcpp_to_spam(std::vector<double> from, std::vector<double> to, int N){
+  // assumption from and to should have same size
+  int M = from.size(); // number of edges
+  std::vector<int> indices(M);
+
+  std::iota(indices.begin(), indices.end(), 0);
+
+  std::sort(indices.begin(), indices.end(),
+            [&](int a, int b) -> bool {
+              return from[a] < from[b] && to[a] < to[b];
+            });
+
+  IntegerVector dimension = {N,N};
+
+  NumericVector entries(M), colindices(M), rowpointers(N+1);
+
+  int r = 0;
+  rowpointers(r++) = 1;
+
+  int j = 0;
+  for (int i : indices){
+    while (r < from[i] && r < rowpointers.length()){
+      rowpointers(r++) = j+1;
+    }
+    entries(j) = 1;
+    colindices(j) = to[i];
+    j++;
+  }
+
+  while (r < rowpointers.length()){
+    rowpointers(r++) = M+1;
+  }
+
+  RcppSpam::Matrix m(entries, colindices, rowpointers, dimension);
+  return m.wrap();
+}
+
 /*** R
 set.seed(1)
 library(spam)
 library(spam64)
 options("spam.force64" = TRUE)
 
-M <- spam_random(nrow = 1e4, density = 0.02)
-member <- (runif(1e4) > 0.9) # i.e. 10% chance of being a member
+N <- 1e4
+M <- spam_random(nrow = N, density = 0.02)
+member <- (runif(N) > 0.9) # i.e. 10% chance of being a member
 
 system.time({
   r <- rcpp_get_dist_sparse2(M, member, 2, max_d=5)
@@ -102,4 +147,11 @@ system.time({
 
 (m$n_members/m$n_nodes) |> round(2)
 
+
+E <- rcpp_to_spam(c(1,1,3), c(3,2,1), N=4)
+str(E)
+as.matrix(E)
+
+member <- c(TRUE, FALSE, FALSE, TRUE)
+rcpp_member_distance2(E, member, seq_len(4), max_d=5)
 */
