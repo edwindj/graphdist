@@ -64,17 +64,20 @@ List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
 
 // [[Rcpp::export]]
 List rcpp_member_distance2( RcppSpam::Matrix& mat
-                                  , LogicalVector& member
-                                  , NumericVector from
-                                  , int max_d
-                                  ){
+                          , LogicalVector& member
+                          , NumericVector from
+                          , int max_d
+                          , int ncores = 1
+                          ){
   int ncols = from.length();
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
+  R_xlen_t from_max = from.length();
+
   #ifdef _OPENMP
-  #pragma omp parallel for
+  #pragma omp parallel for numthreads(ncores)
   #endif
-  for (R_xlen_t i = 0; i < from.length(); i++){
+  for (R_xlen_t i = 0; i < from_max; i++){
     R_xlen_t node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
     n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
@@ -182,13 +185,13 @@ M <- spam_random(nrow = N, density = 0.02)
 member <- (runif(N) > 0.9) # i.e. 10% chance of being a member
 
 system.time({
-  r <- rcpp_get_dist_sparse2(M, member, 2, max_d=5)
+  r <- graphdist:::rcpp_get_dist_sparse2(M, member, 2, max_d=5)
 })
 
 hist(r$distance)
 
 system.time({
-  m <- rcpp_member_distance2(M, member, seq_len(10), max_d=5)
+  m <- graphdist:::rcpp_member_distance2(M, member, seq_len(10), max_d=5)
 })
 
 (m$n_members/m$n_nodes) |> round(2)
