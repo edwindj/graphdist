@@ -94,10 +94,10 @@ S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
 
   Rcout << "Calculating indices...";
 
-  std::vector<int> indices(M);
+  std::vector<R_xlen_t> indices(M);
   std::iota(indices.begin(), indices.end(), 0);
   std::sort(indices.begin(), indices.end(),
-            [&](int a, int b) -> bool {
+            [&](auto a, auto b) -> bool {
               return from[a] < from[b] && to[a] < to[b];
             });
 
@@ -112,7 +112,7 @@ S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   rowpointers(r++) = 1;
 
   Rcout << "\nFilling them...";
-  int j = 0;
+  R_xlen_t j = 0;
   for (int i : indices){
     while (r < from[i] && r < rowpointers.length()){
       rowpointers[r++] = j+1;
