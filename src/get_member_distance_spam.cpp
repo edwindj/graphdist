@@ -88,13 +88,11 @@ struct compare {
 };
 
 // [[Rcpp::export]]
-S4 rcpp_to_spam(std::vector<double> from, std::vector<double> to, int N){
+S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   // assumption from and to should have same size
   int M = from.size(); // number of edges
   std::vector<int> indices(M);
-
   std::iota(indices.begin(), indices.end(), 0);
-
   std::sort(indices.begin(), indices.end(),
             [&](int a, int b) -> bool {
               return from[a] < from[b] && to[a] < to[b];
@@ -110,15 +108,15 @@ S4 rcpp_to_spam(std::vector<double> from, std::vector<double> to, int N){
   int j = 0;
   for (int i : indices){
     while (r < from[i] && r < rowpointers.length()){
-      rowpointers(r++) = j+1;
+      rowpointers[r++] = j+1;
     }
-    entries(j) = 1;
-    colindices(j) = to[i];
+    entries[j] = 1;
+    colindices[j] = to[i];
     j++;
   }
 
   while (r < rowpointers.length()){
-    rowpointers(r++) = M+1;
+    rowpointers[r++] = M+1;
   }
 
   RcppSpam::Matrix m(entries, colindices, rowpointers, dimension);
