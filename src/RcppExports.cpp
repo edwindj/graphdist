@@ -81,6 +81,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_to_spam
+S4 rcpp_to_spam(std::vector<double> from, std::vector<double> to, int N);
+RcppExport SEXP _graphdist_rcpp_to_spam(SEXP fromSEXP, SEXP toSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type to(toSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_to_spam(from, to, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_get_dist", (DL_FUNC) &_graphdist_rcpp_get_dist, 4},
@@ -88,6 +101,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_member_distance", (DL_FUNC) &_graphdist_rcpp_member_distance, 4},
     {"_graphdist_rcpp_get_dist_sparse2", (DL_FUNC) &_graphdist_rcpp_get_dist_sparse2, 4},
     {"_graphdist_rcpp_member_distance2", (DL_FUNC) &_graphdist_rcpp_member_distance2, 4},
+    {"_graphdist_rcpp_to_spam", (DL_FUNC) &_graphdist_rcpp_to_spam, 3},
     {NULL, NULL, 0}
 };
 
