@@ -21,6 +21,10 @@ rcpp_member_distance2 <- function(mat, member, from, max_d) {
     .Call(`_graphdist_rcpp_member_distance2`, mat, member, from, max_d)
 }
 
+rcpp_to_spam_sorted <- function(from, to, N) {
+    .Call(`_graphdist_rcpp_to_spam_sorted`, from, to, N)
+}
+
 rcpp_to_spam <- function(from, to, N) {
     .Call(`_graphdist_rcpp_to_spam`, from, to, N)
 }

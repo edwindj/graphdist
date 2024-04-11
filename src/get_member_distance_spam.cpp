@@ -88,6 +88,37 @@ struct compare {
 };
 
 // [[Rcpp::export]]
+S4 rcpp_to_spam_sorted(NumericVector& from, NumericVector& to, int N){
+  // assumption from and to should have same size
+  R_xlen_t M = from.size(); // number of edges
+
+  IntegerVector dimension = {N,N};
+
+  Rcout << "\nCreating vectors";
+  NumericVector entries(M, 1);
+  NumericVector colindices = to;
+  NumericVector rowpointers(N+1);
+
+  int r = 0;
+  rowpointers(r++) = 1;
+
+  Rcout << "\nFilling them...";
+  for (R_xlen_t j = 0; j < M; ++j){
+    while (r < from[j] && r < rowpointers.length()){
+      rowpointers[r++] = j+1;
+    }
+  }
+
+  while (r < rowpointers.length()){
+    rowpointers[r++] = M+1;
+  }
+
+  RcppSpam::Matrix m(entries, colindices, rowpointers, dimension);
+  return m.wrap();
+}
+
+
+// [[Rcpp::export]]
 S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   // assumption from and to should have same size
   R_xlen_t M = from.size(); // number of edges
@@ -160,6 +191,9 @@ system.time({
 E <- rcpp_to_spam(c(1,1,3), c(3,2,1), N=4)
 str(E)
 as.matrix(E)
+
+E <- rcpp_to_spam_sorted(c(1,1,3), c(2,3,1), N=4)
+str(E)
 
 member <- c(TRUE, FALSE, FALSE, TRUE)
 rcpp_member_distance2(E, member, seq_len(4), max_d=5)
