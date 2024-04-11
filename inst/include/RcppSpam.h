@@ -62,7 +62,7 @@ public:
 
   // element lookup at specific index
   double at(int row, int col) const {
-    for (int j = rowpointers[row]; j < rowpointers[row + 1]; ++j) {
+    for (R_xlen_t j = rowpointers[row]; j < rowpointers[row + 1]; ++j) {
       if (colindices[j] == col)
         return entries[j];
       else if (colindices[j] > col)
@@ -71,7 +71,7 @@ public:
     return 0.0;
   }
   double operator()(int row, int col) const { return at(row, col); };
-  double operator[](int index) const { return entries[index]; };
+  double operator[](R_xlen_t index) const { return entries[index]; };
 
   // subview clones
   Rcpp::NumericVector operator()(int row, Rcpp::IntegerVector& col) {
@@ -96,7 +96,7 @@ public:
   Rcpp::NumericVector col(int col) {
     Rcpp::NumericVector c(dimension[0], 0.0);
     for (int row = 0; row < dimension[0]; ++row){
-      for(int i = rowpointers[row]; i < rowpointers[row+1]; ++i){
+      for(R_xlen_t i = rowpointers[row]; i < rowpointers[row+1]; ++i){
         if (colindices[i] == col){
           c[col] = entries[i];
         } else if (colindices[i] > col){
@@ -118,7 +118,7 @@ public:
   // row access (copy)
   Rcpp::NumericVector row(int row) {
     Rcpp::NumericVector r(dimension[1], 0.0);
-    for (int i = rowpointers[row]; i < rowpointers[row+1]; ++i){
+    for (R_xlen_t i = rowpointers[row]; i < rowpointers[row+1]; ++i){
       r[colindices[i]] = entries[i];
     }
     return r;
@@ -135,14 +135,14 @@ public:
   Rcpp::NumericVector colSums() {
     Rcpp::NumericVector sums(dimension[1]);
     for (int row = 0; row < dimension[0]; ++row)
-      for (int i = rowpointers[row]; i < rowpointers[row + 1]; ++i)
+      for (R_xlen_t i = rowpointers[row]; i < rowpointers[row + 1]; ++i)
         sums(colindices[i]) += entries[i];
     return sums;
   }
   Rcpp::NumericVector rowSums() {
     Rcpp::NumericVector sums(dimension[0]);
     for (int row = 0; row < dimension[0]; ++row)
-      for (int j = rowpointers[row]; j < rowpointers[row + 1]; ++j)
+      for (R_xlen_t j = rowpointers[row]; j < rowpointers[row + 1]; ++j)
         sums(row) += entries[j];
     return sums;
   }
@@ -201,7 +201,7 @@ public:
   // this function is similar to Rcpp::Range, but unlike Rcpp::Range it is thread-safe
   std::vector<unsigned int> InnerIndices(int row) {
     std::vector<unsigned int> v(rowpointers[row + 1] - rowpointers[row]);
-    for (int i = 0, it = rowpointers[row]; it < rowpointers[row + 1]; ++i, ++it)
+    for (R_xlen_t i = 0, it = rowpointers[row]; it < rowpointers[row + 1]; ++i, ++it)
       v[i] = (unsigned int)colindices[it];
     return v;
   }
@@ -233,7 +233,8 @@ public:
 
   private:
     Matrix& ptr;
-    int row_, index, max_index;
+    int row_;
+    R_xlen_t index, max_index;
   };
 
   // equivalent to the "Forward Range" concept in two boost::ForwardTraversalIterator
@@ -264,7 +265,8 @@ public:
   private:
     Matrix& ptr;
     const std::vector<unsigned int>& s;
-    int row_, index, max_index, s_max_index, s_index = 0; //, s_size;
+    R_xlen_t index, max_index, s_max_index, s_index = 0; //, s_size;
+    int row_;
   };
 
   // iterates over non-zero values in ptr.col(col) not at rows in s_
@@ -321,7 +323,8 @@ public:
   private:
     Matrix& ptr;
     std::vector<unsigned int> s;
-    int row_, index, max_index, s_max_index, s_index = 0; //, s_size;
+    R_xlen_t index, max_index, s_max_index, s_index = 0; //, s_size;
+    int row_;
   };
 
   // const col iterator
@@ -354,7 +357,8 @@ public:
 
   private:
     Matrix& ptr;
-    int col_ = 0, index = 0, max_index = 0;
+    int col_ = 0;
+    R_xlen_t index = 0, max_index = 0;
   };
 
   // number of nonzeros in a row

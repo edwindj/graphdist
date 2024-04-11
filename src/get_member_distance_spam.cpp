@@ -6,21 +6,21 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
                           , LogicalVector& member // same dimension as row / col mat
-                          , std::size_t node // node idx
+                          , R_xlen_t node // node idx
                           , int max_d
                           ){
   node -= 1; // R is 1-based, C++ 0-based
 
   // assumption: from, to and member have same domain, should be taken care of
   // and checked in R code.
-  int max_n = member.length();
+  R_xlen_t max_n = member.length();
 
   IntegerVector distance(max_n, R_NaInt);
 
   IntegerVector nodes_at_d(max_d);
   IntegerVector members_at_d(max_d);
 
-  std::vector<int> current;
+  std::vector<R_xlen_t> current;
   current.push_back(node);
   distance[node] = 0;
 
@@ -30,7 +30,7 @@ List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
   while (dc < max_d && current.size() > 0){
     int n_at_d = 0;
     int n_members = 0;
-    std::vector<int> next;
+    std::vector<R_xlen_t> next;
     for (auto from = current.begin(); from != current.end(); from++){
       auto cols = mat.InnerIndices(*from);
       for (auto i = cols.begin(); i != cols.end(); i++){
@@ -62,13 +62,13 @@ List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
 // [[Rcpp::export]]
 List rcpp_member_distance2( RcppSpam::Matrix& mat
                                   , LogicalVector& member
-                                  , IntegerVector from
+                                  , NumericVector from
                                   , int max_d
                                   ){
   int ncols = from.length();
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
-  for (int i = 0; i < from.length(); i++){
+  for (R_xlen_t i = 0; i < from.length(); i++){
     auto node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
     n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
