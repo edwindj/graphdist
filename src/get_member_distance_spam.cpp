@@ -75,7 +75,7 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
   #pragma omp parallel for
   #endif
   for (R_xlen_t i = 0; i < from.length(); i++){
-    auto node_id = from[i];
+    R_xlen_t node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
     n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
     n_members(_, i) = as<IntegerVector>(res["members_at_d"]);
