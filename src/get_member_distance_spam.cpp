@@ -90,20 +90,22 @@ struct compare {
 // [[Rcpp::export]]
 S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   // assumption from and to should have same size
-  int M = from.size(); // number of edges
+  R_xlen_t M = from.size(); // number of edges
 
-  Rcout << "Calculating indices...";
+  Rcout << "Calculating indices with size ";
+  Rcout << M;
+  Rcout << "...";
 
   std::vector<R_xlen_t> indices(M);
-  Rcout << "\tiota...";
+  Rcout << "\n\tiota...";
   std::iota(indices.begin(), indices.end(), 0);
-  Rcout << "\tsorting ...";
+  Rcout << "\n\tsorting ...";
   std::sort(indices.begin(), indices.end(),
             [&](auto a, auto b) -> bool {
               return from[a] < from[b] && to[a] < to[b];
             });
 
-  Rcout << "\tsorted";
+  Rcout << "\n\tsorted\n";
 
   IntegerVector dimension = {N,N};
 
