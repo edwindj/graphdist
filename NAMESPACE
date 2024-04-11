@@ -3,4 +3,5 @@
 export(get_member_distance)
 importFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,sourceCpp)
+importFrom(RcppParallel,RcppParallelLibs)
 useDynLib(graphdist, .registration = TRUE)

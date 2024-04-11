@@ -1,16 +1,11 @@
 #include "../inst/include/RcppSpam.h"
 using namespace Rcpp;
 
-
-//[[Rcpp::plugins(openmp)]]
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 // [[Rcpp::export]]
-List rcpp_get_dist_sparse2( RcppSpam::Matrix& mat
-                          , LogicalVector& member // same dimension as row / col mat
+List rcpp_get_dist_sparse2( const RcppSpam::Matrix& mat
+                          , const LogicalVector& member // same dimension as row / col mat
                           , R_xlen_t node // node idx
-                          , int max_d
+                          , const int max_d
                           ){
   node -= 1; // R is 1-based, C++ 0-based
 
@@ -67,16 +62,12 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
                           , LogicalVector& member
                           , NumericVector from
                           , int max_d
-                          , int ncores = 1
                           ){
   int ncols = from.length();
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
   R_xlen_t from_max = from.length();
 
-  #ifdef _OPENMP
-  #pragma omp parallel for numthreads(ncores)
-  #endif
   for (R_xlen_t i = 0; i < from_max; i++){
     R_xlen_t node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
@@ -174,6 +165,70 @@ S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   return m.wrap();
 }
 
+// [[Rcpp::depends(RcppParallel)]]
+#include <RcppParallel.h>
+using namespace RcppParallel;
+
+struct MemberDistance : public Worker
+{
+  // source matrix
+  const RcppSpam::Matrix& mat;
+  const LogicalVector& member;
+  const NumericVector& from;
+  const int max_d;
+
+  // destination matrix
+  RMatrix<int> n_nodes;
+  RMatrix<int> n_members;
+
+  // initialize with source and destination
+  MemberDistance( const RcppSpam::Matrix& mat
+                , const LogicalVector& member
+                , const NumericVector& from
+                , const int max_d
+                , IntegerMatrix n_nodes
+                , IntegerMatrix n_members
+                )
+    : mat(mat), member(member), from(from), max_d(max_d), n_nodes(n_nodes), n_members(n_members) {
+  }
+
+  void operator()(std::size_t begin, std::size_t end) {
+    for (R_xlen_t i = begin; i < end; ++i){
+      R_xlen_t node_id = from[i];
+      auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
+      auto nodes_at_d = as<IntegerVector>(res["nodes_at_d"]);
+      auto members_at_d = as<IntegerVector>(res["members_at_d"]);
+
+      auto nds_col = n_nodes.column(i);
+      auto mbrs_col = n_members.column(i);
+
+      for (int i = 0; i < max_d; ++i){
+        nds_col[i] = nodes_at_d[i];
+        mbrs_col[i] = members_at_d[i];
+      }
+    }
+  }
+};
+
+//[[Rcpp::export]]
+List rcpp_member_distance_par( const RcppSpam::Matrix& mat
+                            , const LogicalVector& member
+                            , const NumericVector from
+                            , const int max_d){
+    size_t ncols = from.length();
+
+    IntegerMatrix n_nodes(max_d,ncols);
+    IntegerMatrix n_members(max_d,ncols);
+
+    MemberDistance md(mat, member, from, max_d, n_nodes, n_members);
+    parallelFor(0, ncols, md);
+
+    return List::create(
+      _["n_nodes"] = n_nodes,
+      _["n_members"] = n_members
+    );
+}
+
 /*** R
 set.seed(1)
 library(spam)
@@ -206,4 +261,7 @@ str(E)
 
 member <- c(TRUE, FALSE, FALSE, TRUE)
 rcpp_member_distance2(E, member, seq_len(4), max_d=5)
+
+graphdist:::rcpp_member_distance_par(E, member, seq_len(4), max_d=5)
+
 */

@@ -199,7 +199,7 @@ public:
 
   // return indices of columns with nonzero values for a given row
   // this function is similar to Rcpp::Range, but unlike Rcpp::Range it is thread-safe
-  std::vector<unsigned int> InnerIndices(int row) {
+  std::vector<unsigned int> InnerIndices(int row) const {
     std::vector<unsigned int> v(rowpointers[row + 1] - rowpointers[row]);
     for (R_xlen_t i = 0, it = rowpointers[row]; it < rowpointers[row + 1]; ++i, ++it)
       v[i] = (unsigned int)colindices[it];
