@@ -82,13 +82,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_to_spam
-S4 rcpp_to_spam(std::vector<double> from, std::vector<double> to, int N);
+S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N);
 RcppExport SEXP _graphdist_rcpp_to_spam(SEXP fromSEXP, SEXP toSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type to(toSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type to(toSEXP);
     Rcpp::traits::input_parameter< int >::type N(NSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_to_spam(from, to, N));
     return rcpp_result_gen;
