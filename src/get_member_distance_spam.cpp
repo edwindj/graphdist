@@ -91,6 +91,9 @@ struct compare {
 S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
   // assumption from and to should have same size
   int M = from.size(); // number of edges
+
+  Rcout << "Calculating indices...";
+
   std::vector<int> indices(M);
   std::iota(indices.begin(), indices.end(), 0);
   std::sort(indices.begin(), indices.end(),
@@ -98,13 +101,17 @@ S4 rcpp_to_spam(NumericVector& from, NumericVector& to, int N){
               return from[a] < from[b] && to[a] < to[b];
             });
 
+  Rcout << "sorted";
+
   IntegerVector dimension = {N,N};
 
+  Rcout << "\nCreating vectors";
   NumericVector entries(M), colindices(M), rowpointers(N+1);
 
   int r = 0;
   rowpointers(r++) = 1;
 
+  Rcout << "\nFilling them...";
   int j = 0;
   for (int i : indices){
     while (r < from[i] && r < rowpointers.length()){
