@@ -1,3 +1,4 @@
+#' @export
 get_member_distance_spam <- function(E, member, from, max_distance = 3, chunksize = 1e2, file = "member_distance.csv"){
   n_f <- length(from)
   # reshuffle from
