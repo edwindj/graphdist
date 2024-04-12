@@ -11,8 +11,8 @@ get_member_distance_spam <- function(E, member, from, max_distance = 3, chunksiz
     perc <- (100*i/n_chunks) |> round(1)
     l <- rcpp_member_distance2(E, member = member, from = f, max_d = max_distance)
 
-    dimnames(l$n_nodes) <- list(d = paste0("d", seq_len(max_d), "_nodes"), from = NULL)
-    dimnames(l$n_members) <- list(d = paste0("d", seq_len(max_d), "_members"), from = NULL)
+    dimnames(l$n_nodes) <- list(d = paste0("d", seq_len(max_distance), "_nodes"), from = NULL)
+    dimnames(l$n_members) <- list(d = paste0("d", seq_len(max_distance), "_members"), from = NULL)
 
     d <-
       rbind(l$n_nodes, l$n_members) |>
