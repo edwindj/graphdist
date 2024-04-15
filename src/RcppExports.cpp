@@ -68,8 +68,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_member_distance2
-List rcpp_member_distance2(RcppSpam::Matrix& mat, LogicalVector& member, NumericVector from, int max_d);
-RcppExport SEXP _graphdist_rcpp_member_distance2(SEXP matSEXP, SEXP memberSEXP, SEXP fromSEXP, SEXP max_dSEXP) {
+List rcpp_member_distance2(RcppSpam::Matrix& mat, LogicalVector& member, NumericVector from, int max_d, int ncores);
+RcppExport SEXP _graphdist_rcpp_member_distance2(SEXP matSEXP, SEXP memberSEXP, SEXP fromSEXP, SEXP max_dSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -77,7 +77,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< LogicalVector& >::type member(memberSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type from(fromSEXP);
     Rcpp::traits::input_parameter< int >::type max_d(max_dSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_member_distance2(mat, member, from, max_d));
+    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_member_distance2(mat, member, from, max_d, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -127,7 +128,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_get_dist_sparse", (DL_FUNC) &_graphdist_rcpp_get_dist_sparse, 4},
     {"_graphdist_rcpp_member_distance", (DL_FUNC) &_graphdist_rcpp_member_distance, 4},
     {"_graphdist_rcpp_get_dist_sparse2", (DL_FUNC) &_graphdist_rcpp_get_dist_sparse2, 4},
-    {"_graphdist_rcpp_member_distance2", (DL_FUNC) &_graphdist_rcpp_member_distance2, 4},
+    {"_graphdist_rcpp_member_distance2", (DL_FUNC) &_graphdist_rcpp_member_distance2, 5},
     {"_graphdist_rcpp_to_spam_sorted", (DL_FUNC) &_graphdist_rcpp_to_spam_sorted, 3},
     {"_graphdist_rcpp_to_spam", (DL_FUNC) &_graphdist_rcpp_to_spam, 3},
     {"_graphdist_rcpp_member_distance_par", (DL_FUNC) &_graphdist_rcpp_member_distance_par, 4},

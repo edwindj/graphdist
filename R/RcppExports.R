@@ -17,8 +17,8 @@ rcpp_get_dist_sparse2 <- function(mat, member, node, max_d) {
     .Call(`_graphdist_rcpp_get_dist_sparse2`, mat, member, node, max_d)
 }
 
-rcpp_member_distance2 <- function(mat, member, from, max_d) {
-    .Call(`_graphdist_rcpp_member_distance2`, mat, member, from, max_d)
+rcpp_member_distance2 <- function(mat, member, from, max_d, ncores = 1L) {
+    .Call(`_graphdist_rcpp_member_distance2`, mat, member, from, max_d, ncores)
 }
 
 rcpp_to_spam_sorted <- function(from, to, N) {

@@ -1,4 +1,9 @@
 #include "../inst/include/RcppSpam.h"
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -57,22 +62,32 @@ List rcpp_get_dist_sparse2( const RcppSpam::Matrix& mat
   );
 }
 
+// [[Rcpp::plugins("openmp")]]
 // [[Rcpp::export]]
 List rcpp_member_distance2( RcppSpam::Matrix& mat
                           , LogicalVector& member
                           , NumericVector from
                           , int max_d
+                          , int ncores = 1
                           ){
   int ncols = from.length();
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
   R_xlen_t from_max = from.length();
 
+  #if defined(_OPENMP)
+  #pragma omp parallel num_threads(ncores)
+  #pragma omp for
+  #endif
   for (R_xlen_t i = 0; i < from_max; i++){
     R_xlen_t node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
-    n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
-    n_members(_, i) = as<IntegerVector>(res["members_at_d"]);
+
+    #pragma omp atomic
+    {
+      n_nodes(_, i) = as<IntegerVector>(res["nodes_at_d"]);
+      n_members(_, i) = as<IntegerVector>(res["members_at_d"]);
+    }
   }
 
   return List::create(
