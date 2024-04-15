@@ -108,20 +108,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_member_distance_par
-List rcpp_member_distance_par(const RcppSpam::Matrix& mat, const LogicalVector& member, const NumericVector from, const int max_d);
-RcppExport SEXP _graphdist_rcpp_member_distance_par(SEXP matSEXP, SEXP memberSEXP, SEXP fromSEXP, SEXP max_dSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const RcppSpam::Matrix& >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< const LogicalVector& >::type member(memberSEXP);
-    Rcpp::traits::input_parameter< const NumericVector >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< const int >::type max_d(max_dSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_member_distance_par(mat, member, from, max_d));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_get_dist", (DL_FUNC) &_graphdist_rcpp_get_dist, 4},
@@ -131,7 +117,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_member_distance2", (DL_FUNC) &_graphdist_rcpp_member_distance2, 5},
     {"_graphdist_rcpp_to_spam_sorted", (DL_FUNC) &_graphdist_rcpp_to_spam_sorted, 3},
     {"_graphdist_rcpp_to_spam", (DL_FUNC) &_graphdist_rcpp_to_spam, 3},
-    {"_graphdist_rcpp_member_distance_par", (DL_FUNC) &_graphdist_rcpp_member_distance_par, 4},
     {NULL, NULL, 0}
 };
 

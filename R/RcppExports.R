@@ -29,7 +29,3 @@ rcpp_to_spam <- function(from, to, N) {
     .Call(`_graphdist_rcpp_to_spam`, from, to, N)
 }
 
-rcpp_member_distance_par <- function(mat, member, from, max_d) {
-    .Call(`_graphdist_rcpp_member_distance_par`, mat, member, from, max_d)
-}
-

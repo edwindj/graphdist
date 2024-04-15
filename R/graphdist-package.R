@@ -1,6 +1,7 @@
 ## usethis namespace: start
 #' @importFrom Rcpp sourceCpp
-#' @importFrom RcppParallel RcppParallelLibs
+#' @importFrom utils read.csv write.table
+# @importFrom RcppParallel RcppParallelLibs
 ## usethis namespace: end
 NULL
 
