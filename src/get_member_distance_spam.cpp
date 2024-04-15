@@ -1,8 +1,4 @@
 #include "../inst/include/RcppSpam.h"
-#if defined(_OPENMP)
-#include <omp.h>
-#endif
-
 
 using namespace Rcpp;
 
@@ -62,7 +58,6 @@ List rcpp_get_dist_sparse2( const RcppSpam::Matrix& mat
   );
 }
 
-// [[Rcpp::plugins(openmp)]]
 // [[Rcpp::export]]
 List rcpp_member_distance2( RcppSpam::Matrix& mat
                           , LogicalVector& member

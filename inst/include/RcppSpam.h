@@ -1,4 +1,9 @@
 #include <RcppCommon.h>
+// [[Rcpp::plugins(openmp)]]
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 
 // forward declare classes
 namespace RcppSpam {
