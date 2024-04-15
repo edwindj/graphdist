@@ -1,5 +1,12 @@
 #' @export
-get_member_distance_spam <- function(E, member, from, max_distance = 3, chunksize = 1e2, file = "member_distance.csv"){
+get_member_distance_spam <- function( E
+                                    , member
+                                    , from
+                                    , max_distance = 3
+                                    , chunksize = 1e2
+                                    , file = "member_distance.csv"
+                                    , ncores = 1
+                                    ){
   n_f <- length(from)
   # reshuffle from
   n_chunks <- ceiling(n_f/chunksize)
@@ -9,7 +16,7 @@ get_member_distance_spam <- function(E, member, from, max_distance = 3, chunksiz
   for (i in seq_along(chunks)){
     f <- chunks[[i]]
     perc <- (100*i/n_chunks) |> round(1)
-    l <- rcpp_member_distance2(E, member = member, from = f, max_d = max_distance)
+    l <- rcpp_member_distance2(E, member = member, from = f, max_d = max_distance, ncores = ncores)
 
     dimnames(l$n_nodes) <- list(d = paste0("d", seq_len(max_distance), "_nodes"), from = NULL)
     dimnames(l$n_members) <- list(d = paste0("d", seq_len(max_distance), "_members"), from = NULL)
