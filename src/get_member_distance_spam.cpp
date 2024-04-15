@@ -71,8 +71,8 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
   R_xlen_t from_max = from.length();
 
   #if defined(_OPENMP)
-  #pragma omp parallel num_threads(ncores)
-  #pragma omp for shared(n_nodes, n_members)
+  #pragma omp parallel num_threads(ncores) shared(n_nodes, n_members)
+  #pragma omp for
   #endif
   for (R_xlen_t i = 0; i < from_max; i++){
     R_xlen_t node_id = from[i];
