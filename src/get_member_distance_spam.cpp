@@ -14,10 +14,9 @@ List rcpp_get_dist_sparse2( const RcppSpam::Matrix& mat
   // and checked in R code.
   R_xlen_t max_n = member.length();
 
-  IntegerVector distance(max_n, R_NaInt);
-
-  IntegerVector nodes_at_d(max_d);
-  IntegerVector members_at_d(max_d);
+  std::vector<int> distance(max_n, R_NaInt);
+  std::vector<int> nodes_at_d(max_d);
+  std::vector<int> members_at_d(max_d);
 
   std::vector<R_xlen_t> current;
   current.push_back(node);
@@ -66,6 +65,7 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
                           , int ncores = 1
                           ){
   int ncols = from.length();
+
   IntegerMatrix n_nodes(max_d,ncols);
   IntegerMatrix n_members(max_d,ncols);
   R_xlen_t from_max = from.length();
@@ -74,6 +74,7 @@ List rcpp_member_distance2( RcppSpam::Matrix& mat
   #pragma omp parallel num_threads(ncores) shared(n_nodes, n_members)
   #pragma omp for
   #endif
+
   for (R_xlen_t i = 0; i < from_max; i++){
     R_xlen_t node_id = from[i];
     auto res = rcpp_get_dist_sparse2(mat, member, node_id, max_d);
