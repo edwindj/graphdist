@@ -2,8 +2,8 @@ library(data.table)
 library(graphdist)
 # big example
 set.seed(1)
-N <- 1e3
-M <- 1e4
+N <- 1e4
+M <- 1e6
 
 edges <- data.table(
   from = sample(N, size=M, replace = TRUE),
