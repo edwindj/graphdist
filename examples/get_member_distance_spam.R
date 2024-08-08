@@ -11,7 +11,7 @@ edges <- data.table(
   value = 1
 )[from != to,] |> setDF()
 
-from <- sample(N, size = 1e2)
+from <- sample(N, size = 1e3)
 member <- (seq_len(N) %in% from)
 
 library(spam)
@@ -25,8 +25,7 @@ max_d <- 4
 l <- graphdist:::rcpp_member_distance2(E, member, from, max_d=max_d)
 
 system.time({
-  r <- get_member_distance_spam(E, member = member, from = from, max_d = max_d, chunksize = 4)
-
+  r <- get_member_distance_spam(E, member = member, from = from, max_d = max_d, chunksize = 1e2, ncores = 1)
   })
 
 

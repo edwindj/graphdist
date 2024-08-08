@@ -1,11 +1,11 @@
 #include "../inst/include/graphdist_types.h"
 using namespace Rcpp;
-
+//[[Rcpp::plugins(openmp)]]
 // [[Rcpp::export]]
 List rcpp_get_dist_sparse( RcppSparse::Matrix& mat
-                        , LogicalVector& member // same dimension as row / col mat
-                        , std::size_t node // node idx
-                        , int max_d
+                         , LogicalVector& member // same dimension as row / col mat
+                         , std::size_t node // node idx
+                         , int max_d
                         ){
   node -= 1; // R is 1-based, C++ 0-based
 

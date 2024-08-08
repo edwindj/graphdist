@@ -53,6 +53,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_get_member_distance3
+List rcpp_get_member_distance3(const S4 E, LogicalVector member, std::vector<size_t> from_nodes, int max_d, int nthreads);
+RcppExport SEXP _graphdist_rcpp_get_member_distance3(SEXP ESEXP, SEXP memberSEXP, SEXP from_nodesSEXP, SEXP max_dSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const S4 >::type E(ESEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type member(memberSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type from_nodes(from_nodesSEXP);
+    Rcpp::traits::input_parameter< int >::type max_d(max_dSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_get_member_distance3(E, member, from_nodes, max_d, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_get_dist_sparse2
 List rcpp_get_dist_sparse2(const RcppSpam::Matrix& mat, const LogicalVector& member, R_xlen_t node, const int max_d);
 RcppExport SEXP _graphdist_rcpp_get_dist_sparse2(SEXP matSEXP, SEXP memberSEXP, SEXP nodeSEXP, SEXP max_dSEXP) {
@@ -113,6 +128,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_graphdist_rcpp_get_dist", (DL_FUNC) &_graphdist_rcpp_get_dist, 4},
     {"_graphdist_rcpp_get_dist_sparse", (DL_FUNC) &_graphdist_rcpp_get_dist_sparse, 4},
     {"_graphdist_rcpp_member_distance", (DL_FUNC) &_graphdist_rcpp_member_distance, 4},
+    {"_graphdist_rcpp_get_member_distance3", (DL_FUNC) &_graphdist_rcpp_get_member_distance3, 5},
     {"_graphdist_rcpp_get_dist_sparse2", (DL_FUNC) &_graphdist_rcpp_get_dist_sparse2, 4},
     {"_graphdist_rcpp_member_distance2", (DL_FUNC) &_graphdist_rcpp_member_distance2, 5},
     {"_graphdist_rcpp_to_spam_sorted", (DL_FUNC) &_graphdist_rcpp_to_spam_sorted, 3},
